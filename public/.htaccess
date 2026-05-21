@@ -13,12 +13,8 @@ DirectoryIndex index.php
     Require all denied
 </FilesMatch>
 
-# Block direct access to PHP files in uploads folder (security)
-<Directory "assets/images/uploads">
-    <FilesMatch "\.(php|phtml|php3|php4|php5|php7|phar)$">
-        Require all denied
-    </FilesMatch>
-</Directory>
+# Note: PHP execution in uploads/ is blocked by the .htaccess in that folder
+# (Directory blocks are NOT permitted in .htaccess — only in main server config)
 
 # Cache static assets
 <IfModule mod_expires.c>

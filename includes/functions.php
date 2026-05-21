@@ -12,6 +12,10 @@ function start_session() {
     }
 }
 
+// Always start the session up-front so headers (set-cookie) can be sent
+// before any markup output. All page files require this file first.
+start_session();
+
 // Sanitize output to prevent XSS
 function e($string) {
     return htmlspecialchars($string ?? '', ENT_QUOTES, 'UTF-8');
