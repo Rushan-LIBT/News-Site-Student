@@ -1,0 +1,22 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+*.sublime-*
+
+# PHP
+vendor/
+composer.lock
+*.log
+
+# Uploads — keep folder but exclude actual uploaded files
+public/assets/images/uploads/*
+!public/assets/images/uploads/.gitkeep
+!public/assets/images/uploads/.htaccess
+
+# Environment / secrets
+.env
+config.local.php
