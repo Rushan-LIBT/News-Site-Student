@@ -109,28 +109,89 @@ function unique_slug($title, $table = 'articles', $excludeId = null) {
     return $slug;
 }
 
-// File upload helper — validates type & size, returns saved filename
-function upload_image($file, $prefix = 'img') {
-    if (!isset($file) || $file['error'] !== UPLOAD_ERR_OK) return null;
+// File upload helper — validates type & size, returns saved filename.
+// On failure returns false and populates $error by reference with a
+// human-readable reason. On no-file returns null.
+function upload_image($file, $prefix = 'img', &$error = null) {
+    $error = null;
 
+    if (!isset($file) || empty($file['name']) || ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+        return null; // no file selected — not an error
+    }
+
+    // Map PHP upload error codes to messages
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        $codes = [
+            UPLOAD_ERR_INI_SIZE   => 'File exceeds upload_max_filesize in php.ini',
+            UPLOAD_ERR_FORM_SIZE  => 'File exceeds form MAX_FILE_SIZE',
+            UPLOAD_ERR_PARTIAL    => 'File was only partially uploaded',
+            UPLOAD_ERR_NO_TMP_DIR => 'Missing temporary folder on server',
+            UPLOAD_ERR_CANT_WRITE => 'Cannot write file to disk',
+            UPLOAD_ERR_EXTENSION  => 'Upload stopped by a PHP extension',
+        ];
+        $error = $codes[$file['error']] ?? ('Unknown upload error code: ' . $file['error']);
+        return false;
+    }
+
+    // Validate actual MIME type from file contents (not just extension)
     $allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     $finfo = new finfo(FILEINFO_MIME_TYPE);
-    $mime = $finfo->file($file['tmp_name']);
+    $mime  = $finfo->file($file['tmp_name']);
+    if (!in_array($mime, $allowed)) {
+        $error = 'Invalid file type "' . $mime . '". Allowed: JPG, PNG, WEBP, GIF.';
+        return false;
+    }
 
-    if (!in_array($mime, $allowed)) return false;
-    if ($file['size'] > 5 * 1024 * 1024) return false; // 5MB max
+    // Size cap
+    if ($file['size'] > 5 * 1024 * 1024) {
+        $error = 'File too large (' . round($file['size'] / 1024 / 1024, 2) . ' MB). Max 5 MB.';
+        return false;
+    }
 
-    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-    $name = $prefix . '-' . time() . '-' . bin2hex(random_bytes(4)) . '.' . strtolower($ext);
-
+    // Ensure uploads dir exists and is writable
     if (!is_dir(UPLOAD_DIR)) {
-        mkdir(UPLOAD_DIR, 0755, true);
+        if (!@mkdir(UPLOAD_DIR, 0755, true)) {
+            $error = 'Could not create uploads folder. Path: ' . UPLOAD_DIR;
+            return false;
+        }
+    }
+    if (!is_writable(UPLOAD_DIR)) {
+        $error = 'Uploads folder is not writable. chmod 755 (or 775) on: ' . UPLOAD_DIR;
+        return false;
     }
 
-    if (move_uploaded_file($file['tmp_name'], UPLOAD_DIR . $name)) {
-        return $name;
+    // Build unique filename
+    $ext  = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) $ext = 'jpg';
+    $name = $prefix . '-' . date('Ymd-His') . '-' . bin2hex(random_bytes(4)) . '.' . $ext;
+
+    if (!move_uploaded_file($file['tmp_name'], UPLOAD_DIR . $name)) {
+        $error = 'Failed to move uploaded file to ' . UPLOAD_DIR;
+        return false;
     }
+
+    return $name;
+}
+
+// Safely delete an article image file from the uploads folder
+function delete_uploaded_image($filename) {
+    if (empty($filename)) return false;
+    // Only allow plain filenames (no paths) to prevent traversal
+    if (basename($filename) !== $filename) return false;
+    $path = UPLOAD_DIR . $filename;
+    if (is_file($path)) return @unlink($path);
     return false;
+}
+
+// Check if the uploads folder is properly writable. Used by admin forms.
+function uploads_dir_status() {
+    if (!is_dir(UPLOAD_DIR)) {
+        return ['ok' => false, 'msg' => 'Uploads folder does not exist: ' . UPLOAD_DIR];
+    }
+    if (!is_writable(UPLOAD_DIR)) {
+        return ['ok' => false, 'msg' => 'Uploads folder exists but is NOT writable. Run: chmod -R 775 ' . UPLOAD_DIR];
+    }
+    return ['ok' => true, 'msg' => 'Uploads folder writable: ' . UPLOAD_DIR];
 }
 
 // Get article image URL with fallback

@@ -31,6 +31,7 @@ $page_title = $page_title ?? 'Admin';
             <li><a href="users.php"      class="<?= $admin_page === 'users'      ? 'active' : '' ?>"><i class="fas fa-users"></i> <span>Users</span></a></li>
             <li><a href="comments.php"   class="<?= $admin_page === 'comments'   ? 'active' : '' ?>"><i class="fas fa-comments"></i> <span>Comments</span></a></li>
             <li><a href="messages.php"   class="<?= $admin_page === 'messages'   ? 'active' : '' ?>"><i class="fas fa-envelope"></i> <span>Messages</span></a></li>
+            <li><a href="uploads.php"    class="<?= $admin_page === 'media'      ? 'active' : '' ?>"><i class="fas fa-images"></i> <span>Media</span></a></li>
             <li><a href="<?= SITE_URL ?>/index.php" target="_blank"><i class="fas fa-external-link-alt"></i> <span>View Site</span></a></li>
             <li><a href="<?= SITE_URL ?>/logout.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
         </ul>

@@ -13,8 +13,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['_action'] ?? '') === 'dele
         flash('error', 'Invalid token.');
     } else {
         $del_id = (int)$_POST['id'];
+        // Fetch image filename first so we can remove it after the row is gone
+        $imgStmt = db()->prepare("SELECT image FROM articles WHERE id = :id");
+        $imgStmt->execute([':id' => $del_id]);
+        $old_image = $imgStmt->fetchColumn();
+
         $stmt = db()->prepare("DELETE FROM articles WHERE id = :id");
         $stmt->execute([':id' => $del_id]);
+
+        if ($old_image) delete_uploaded_image($old_image);
         flash('success', 'Article deleted.');
     }
     redirect(ADMIN_URL . '/articles.php');
@@ -66,12 +73,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array(($_POST['_action'] ?? ''),
 
     // Image upload
     $new_image = null;
+    $upload_err = null;
     if (!empty($_FILES['image']['name'])) {
-        $new_image = upload_image($_FILES['image'], 'article');
-        if ($new_image === false) $errors[] = 'Image upload failed. Use JPG/PNG/WEBP under 5MB.';
+        $new_image = upload_image($_FILES['image'], 'article', $upload_err);
+        if ($new_image === false) {
+            $errors[] = 'Image upload failed: ' . $upload_err;
+        }
     }
 
     if (empty($errors)) {
+        // If a new image was uploaded successfully, delete the previous one
+        if ($new_image && !empty($article['image']) && $new_image !== $article['image']) {
+            delete_uploaded_image($article['image']);
+        }
         $image_to_save = $new_image ?: $article['image'];
 
         if ($action === 'edit' && $article['id']) {
@@ -206,8 +220,17 @@ if ($action === 'list') {
 // FORM (new / edit)
 // =========================================================
 $page_title = $action === 'edit' ? 'Edit Article' : 'New Article';
+$upload_status = uploads_dir_status();
 include __DIR__ . '/_layout_top.php';
 ?>
+
+<?php if (!$upload_status['ok']): ?>
+    <div class="alert alert-warning">
+        <strong><i class="fas fa-exclamation-triangle"></i> Uploads folder problem:</strong>
+        <?= e($upload_status['msg']) ?>
+        <div class="small mt-1">Articles can still be saved without an image, but uploads will fail until this is fixed.</div>
+    </div>
+<?php endif; ?>
 
 <?php if (!empty($errors)): ?>
     <div class="alert alert-danger"><ul class="mb-0"><?php foreach ($errors as $e): ?><li><?= e($e) ?></li><?php endforeach; ?></ul></div>
