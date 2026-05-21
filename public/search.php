@@ -11,11 +11,12 @@ if (strlen($q) >= 2) {
         JOIN categories c ON a.category_id = c.id
         JOIN users u ON a.author_id = u.id
         WHERE a.status = 'published'
-        AND (a.title LIKE :q OR a.content LIKE :q OR a.excerpt LIKE :q)
+        AND (a.title LIKE :q1 OR a.content LIKE :q2 OR a.excerpt LIKE :q3)
         ORDER BY a.created_at DESC
         LIMIT 30
     ");
-    $stmt->execute([':q' => '%' . $q . '%']);
+    $like = '%' . $q . '%';
+    $stmt->execute([':q1' => $like, ':q2' => $like, ':q3' => $like]);
     $articles = $stmt->fetchAll();
 }
 
