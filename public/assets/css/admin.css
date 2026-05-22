@@ -1,0 +1,220 @@
+/* ==========================================================
+   NewsLanka Admin Panel Styles
+   ========================================================== */
+
+:root {
+    --admin-primary: #1a1a2e;
+    --admin-accent: #e94560;
+    --admin-sidebar: #16213e;
+    --admin-sidebar-active: #0f3460;
+}
+
+body.admin-body {
+    background: #f4f6f9;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+}
+
+.admin-wrap {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ====== SIDEBAR ====== */
+.admin-sidebar {
+    width: 250px;
+    background: var(--admin-sidebar);
+    color: #fff;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+.admin-sidebar .brand {
+    padding: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+}
+.admin-sidebar .brand a {
+    color: #fff;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    text-decoration: none;
+}
+.admin-sidebar .brand small {
+    display: block;
+    color: rgba(255,255,255,0.6);
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    margin-top: 4px;
+}
+.admin-sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.admin-sidebar ul li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.2s;
+}
+.admin-sidebar ul li a:hover {
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+}
+.admin-sidebar ul li a.active {
+    background: var(--admin-sidebar-active);
+    border-left-color: var(--admin-accent);
+    color: #fff;
+}
+
+/* ====== MAIN ====== */
+.admin-main {
+    flex: 1;
+    padding: 0;
+}
+.admin-topbar {
+    background: #fff;
+    padding: 14px 25px;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.admin-topbar .page-title {
+    font-size: 1.3rem;
+    margin: 0;
+    color: var(--admin-primary);
+}
+.admin-content {
+    padding: 25px;
+}
+
+/* ====== STAT CARDS ====== */
+.stat-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 22px;
+    border-left: 4px solid var(--admin-accent);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.stat-card .label {
+    color: #6c757d;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+.stat-card .value {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--admin-primary);
+}
+.stat-card.blue   { border-left-color: #4361ee; }
+.stat-card.green  { border-left-color: #2dc653; }
+.stat-card.orange { border-left-color: #f9844a; }
+.stat-card.purple { border-left-color: #9d4edd; }
+
+/* ====== TABLES ====== */
+.admin-table {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.admin-table table {
+    margin: 0;
+}
+.admin-table thead th {
+    background: var(--admin-primary);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 14px;
+    border: none;
+}
+.admin-table tbody td {
+    padding: 14px;
+    vertical-align: middle;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* ====== STATUS PILLS ====== */
+.pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.pill-success  { background: #d1f7c4; color: #1f7a32; }
+.pill-warning  { background: #fff3cd; color: #856404; }
+.pill-danger   { background: #f8d7da; color: #842029; }
+.pill-info     { background: #cfe2ff; color: #084298; }
+.pill-muted    { background: #e2e3e5; color: #41464b; }
+
+/* ====== FORM CARD ====== */
+.form-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.form-card label {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 6px;
+}
+
+/* ====== LOGIN PAGE ====== */
+.admin-login-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--admin-primary), var(--admin-sidebar));
+}
+.admin-login-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 35px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+}
+.admin-login-card .brand {
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 1.8rem;
+    color: var(--admin-primary);
+    margin-bottom: 5px;
+}
+.admin-login-card .brand .accent { color: var(--admin-accent); }
+.admin-login-card .subtitle {
+    text-align: center;
+    color: #6c757d;
+    margin-bottom: 25px;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 768px) {
+    .admin-sidebar { width: 70px; }
+    .admin-sidebar .brand a { font-size: 1rem; }
+    .admin-sidebar .brand small { display: none; }
+    .admin-sidebar ul li a span { display: none; }
+}
